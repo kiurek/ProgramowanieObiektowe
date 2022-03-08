@@ -9,7 +9,8 @@ namespace lab1
         {
             Person person = Person.Of("Kuba");
             Console.WriteLine(person.FirstName);
-            Money money1 = Money.Of(1, Currency.PLN);
+            Money money1 = Money.Of(-1, Currency.PLN);
+            
         }
     }
         class Person
@@ -24,7 +25,7 @@ namespace lab1
 
             public static Person Of(string firstName)
             {
-                if (firstName.Length <= 2)
+                if (firstName.Length >= 2)
                 {
                     return new Person(firstName);
                 }
@@ -38,7 +39,7 @@ namespace lab1
             {
                 get
                 {
-                    return FirstName;
+                    return _firstName;
                 }
                 set
                 {
@@ -97,7 +98,21 @@ namespace lab1
             }
             // money * 5 --> *(money, 5)
             // 5 * money --> *(5, money)
-
+            
+            public static Money? ParseValue (string ValueStr, Currency currency)
+            {
+                decimal parsedValue;
+                bool success = decimal.TryParse(ValueStr, out parsedValue);
+                if (success)
+                {
+                    return Money.Of(parsedValue, currency);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid argument/s");
+                }
+            }
         }
-        }
+        
     }
+}
