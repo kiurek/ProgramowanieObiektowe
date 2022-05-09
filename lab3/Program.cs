@@ -16,14 +16,9 @@ interface IPlay
     string Play();
 }
 
-class Musician<T>: where T : Instrument, IPlay
+class Musician<T> where T : Instrument, IPlay
 {
     public T Instrument { get; init; }
-
-    public Instrument()
-    {
-        musician = new T();
-    }
 
     public string Play()
     {
@@ -59,7 +54,10 @@ class Guitar : Instrument
 
 class Drum : Instrument
 {
-    return "DRUM";
+    public override string Play()
+    {
+        return "DRUM";
+    }
 }
 
 //Cwiczenie 2
@@ -68,7 +66,9 @@ public class Exercise2
     //Zmień poniższą metodę, aby zwracała krotkę z polami typu string, int i bool oraz wartościami "Karol", 12 i true
     public static object getTuple1()
     {
-        var tuple = ("Karol", 12, true);
+        ValueTuple<string, int, bool> tuple = ValueTuple.Create("Karol", 12, true);
+
+        return tuple;
     }
 
     //Zdefiniuj poniższą metodę, aby zwracała krotkę o dwóch polach
@@ -84,7 +84,16 @@ public class Exercise2
     //tuple.isSame          ==> false
     public static ValueTuple<T[], bool> GetTuple2<T>(T[] arr)
     {
-        
+        var last = arr[arr.Length - 1];
+        var first = arr[0];
+
+        T[] firstAndLast = {first, last};
+
+        var tuple = GetTuple2<T>(arr);
+
+        tuple = (firstAndLast, arr == firstAndLast);
+
+        return tuple;
     }
 }
 
