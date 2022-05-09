@@ -1,4 +1,40 @@
-﻿public abstract class Vehicle
+﻿IFlyable[] flyingObject =
+{
+    new Duck(){Name="Kaczka", Size="Srednia"},
+    new Wasp(){Name="Osa",Size="Mala"},
+    new Plane(){Name="Samolot",Size="Duzy"}
+};
+
+int flies = 0;
+foreach (var item in flyingObject)
+{
+    if (item is IFlyable && item is ISwimmingable)
+    {
+        flies++;
+    }
+}
+Console.WriteLine($"Jest {flies} obiektów które posiadają zaimplementowane dwa interfejsy ");
+
+
+Vehicle[] vehicles =
+{
+
+ new ElectricScooter(){Weight =40, MaxSpeed=40, MaxRange=10},
+ new ElectricScooter(){Weight =40, MaxSpeed=40, MaxRange=5}
+};
+
+
+Console.WriteLine();
+foreach (var vehicle in vehicles)
+{
+
+    Console.WriteLine($"{vehicle.Drive(5)}");
+    Console.WriteLine($"Bateria naładowana w {vehicle.ChargeBatteries()}");
+}
+
+//Ćwiczenie 1
+
+public abstract class Vehicle
 {
     public double Weight { get; init; }
     public int MaxSpeed { get; init; }
@@ -8,190 +44,164 @@
         get { return _mileage; }
     }
     public abstract decimal Drive(int distance);
+    public abstract decimal ChargeBatteries();
+
+
     public override string ToString()
     {
         return $"Vehicle{{ Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage} }}";
     }
 }
-
-public class Car : Vehicle
+public abstract class Scooter : Vehicle
 {
-    public bool isFuel { get; set; }
-    public bool isEngineWorking { get; set; }
-    public override decimal Drive(int distance)
+}
+
+public class ElectricScooter : Scooter
+{
+    protected decimal _batteriesLevel = 100;
+    public decimal BatteriesLevel
     {
-        if (isFuel && isEngineWorking)
+        get { return _batteriesLevel; }
+    }
+    public decimal MaxRange { get; init; } //20
+
+    public override decimal ChargeBatteries()
+    {
+        if (_batteriesLevel != 100 && _batteriesLevel < 100)
         {
+            while (_batteriesLevel != 100)
+            {
+                _batteriesLevel++;
+            }
+            return _batteriesLevel;
+        }
+        else
+        {
+            return _batteriesLevel;
+        }
+
+
+
+    }
+    public override decimal Drive(int distance) //MAx range 10 distance 5 batlevel 100
+    {
+        decimal ProcentBateriNaJedenDistance = _batteriesLevel / MaxRange;
+        if (ProcentBateriNaJedenDistance > 0)
+        {
+            while (distance != 0)
+            {
+                distance--;
+                _batteriesLevel = _batteriesLevel - ProcentBateriNaJedenDistance;
+            }
+
             _mileage += distance;
-            return (decimal)(distance / (double)MaxSpeed);
+            return _batteriesLevel;
         }
         return -1;
     }
     public override string ToString()
     {
-        return $"Car{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}";
+        return $"Scooter{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}";
     }
 }
 
-public class Bicycle : Vehicle
-{
-    public bool isDriver { get; set; }
-    public override decimal Drive(int distance)
-    {
-        if (isDriver)
-        {
-            _mileage += distance;
-            return (decimal)(distance / (double)MaxSpeed);
-        }
-        return -1;
-    }
-    public override string ToString()
-    {
-        return $"Bicycle{{Weight: {Weight}, MaxSpeed: {MaxSpeed}, Mileage: {_mileage}}}"; ;
-    }
-}
 
-foreach (var vehicle in vehicles)
+class EmailMessage : AbstractMessage
 {
-    Console.WriteLine("Time for distance: " + vehicle.Drive(45));
-}
+    public string To { get; set; }
+    public string From { get; set; }
+    public string Subject { get; set; }
 
-int bicycleCounter = 0;
-int carCounter = 0;
-foreach (var vehicle in vehicles)
-
-{
-    if (vehicle is Bicycle)
+    public override bool Send()
     {
-        bicycleCounter++;
-        Bicycle bicycle = (Bicycle)vehicle;
-        Console.WriteLine("Czy rower ma kierowcę: " + bicycle.isDriver);
-    }
-    if (vehicle is Car)
-    {
-        carCounter++;
-    }
-}
-Console.WriteLine($"Liczba rowerów: {bicycleCounter}, liczba samochodów: {carCounter}");
-
-interface Driveable
-{
-    int Drive(int distance);
-}
-interface Swimmingable
-{
-    int Swim(int distance);
-}
-interface Flyable
-{
-    void TakeOff();
-    int Fly(int disntance);
-}
-
-public class Truck : Vehicle, Driveable
-{
-    public override decimal Drive(int distance)
-    {
-        return 0;
-    }
-}
-public class Amphibian : Vehicle, Driveable, Swimmingable
-{
-    public override decimal Drive(int distance)
-    {
-        Console.WriteLine("DRIVE");
-        return 0;
-    }
-    public decimal Swim(int distance)
-    {
-        Console.WriteLine("SWIM");
-        return 0;
-    }
-}
-public class Hydroplane : Vehicle, Flyable, Swimmingable
-{
-    public override decimal Drive(int distance)
-    {
-        Console.WriteLine("DRIVE");
-        return 0;
-    }
-    public decimal Swim(int distance)
-    {
-        Console.WriteLine("SWIM");
-        return 0;
-    }
-    public bool TakeOff()
-    {
-        Console.WriteLine("TAKE OFF");
+        Console.WriteLine($"Sending email from {From} to {To} with content {Content}");
         return true;
     }
-    public decimal Fly(int distance)
+}
+class MessengerMessage : AbstractMessage
+{
+    public string NameFrom { get; set; }
+    public string NameTo { get; set; }
+
+    public override bool Send()
     {
-        Console.WriteLine("FLY");
-        return 0;
-    }
-    public bool Land()
-    {
-        Console.WriteLine("LAND");
+        Console.WriteLine($"Sending message using Messanger from {NameFrom}, to {NameTo} with content {Content}");
         return true;
     }
 }
 
-Vehicle[] army =
+class SmsMessage : AbstractMessage
 {
- new Amphibian(){MaxSpeed = 20},
- new Hydroplane(){MaxSpeed = 800},
- new Truck() {MaxSpeed = 100}
-};
-foreach (var vehicle in army)
-{
-    if (vehicle is Hydroplane)
+    public string ToPhone { get; init; }
+    public string FromPhone { get; init; }
+    public override bool Send()
     {
-        Console.WriteLine("Hydroplane");
-        Hydroplane hydroplane = (Hydroplane)vehicle;
-        hydroplane.TakeOff();
-        hydroplane.Fly(100);
-        hydroplane.Land();
+        Console.WriteLine($"Sending sms from {FromPhone} to { ToPhone} with content {Content}");
+        return true;
     }
 }
 
-class Duck : ISwimmingable, IFlyable
+class User
 {
-    public decimal size;
-    public decimal Fly(int distance)
+    public string Name { get; init; }
+    public AbstractMessage LastMessage { get; init; }
+
+}
+
+
+abstract class AbstractMessage
+{
+    public string Content { get; set; }
+    public abstract bool Send();
+}
+
+
+public interface IFlyable
+{
+    void fly();
+}
+
+public interface ISwimmingable
+{
+    void swim();
+}
+
+public class Duck : IFlyable, ISwimmingable
+{
+    public string Name { set; get; }
+    public string Size { set; get; }
+    public void fly()
     {
         throw new NotImplementedException();
     }
 
-    public decimal Swim(int distance)
+    public void swim()
     {
         throw new NotImplementedException();
     }
 }
 
-class Wasp : IFlyable
+public class Wasp : IFlyable
 {
-    public decimal size;
-    public decimal Fly(int distance)
+    public string Name { set; get; }
+    public string Size { set; get; }
+    public void fly()
     {
         throw new NotImplementedException();
     }
 }
 
-readonly static IFlyable[] IcanFly =
+public class Plane : IFlyable, ISwimmingable
 {
-    new Duck(){size=5},
-    new Wasp(){size=21},
-    new Duck(){size=1},
-    new Duck(){size=6},
-    new Hydroplane()
-};
-
-foreach (var fly in IcanFly)
-{
-    if ((fly is IFlyable) && (fly is ISwimmingable))
+    public string Name { set; get; }
+    public string Size { set; get; }
+    public void fly()
     {
-        count++;
-        Console.WriteLine(fly.GetType().Name);
+        throw new NotImplementedException();
     }
-};
+
+    public void swim()
+    {
+        throw new NotImplementedException();
+    }
+}
