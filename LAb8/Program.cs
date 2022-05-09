@@ -1,297 +1,132 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace LAb8
+namespace lab8
 {
-    delegate String IntFormatter(int a);
-
-    delegate double operation(double a, double b);
+    record Student(int Id, string Name, int Ects);
     class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            int points = 0;
-            try
+            int[] ints = { 4, 6, 7, 3, 2, 8, 9 };
+            IEnumerable<int> evenNumbers =
+                from n in ints
+                where !(n % 2 == 0) && n > 5
+                select n;
+            Console.WriteLine(string.Join(", ", evenNumbers));
+            //
+            Predicate<int> intPredicate = n =>
             {
-                IntFormatter formatter = HexFormatter();
-                if (formatter.Invoke(15).Equals("F") && formatter.Invoke(5).Equals("5") && formatter.Invoke(11).Equals("B"))
-                {
-                    Console.WriteLine("Zadanie 1: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 1: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 1: 0");
-            }
-            try
-            {
-                operation op = AddOperation();
-                if (op is operation && op.Invoke(1, 2) == 3 && op.Invoke(100, 3) == 103)
-                {
-                    Console.WriteLine("Zadanie 2: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 2: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 2: 0");
-            }
-            try
-            {
-                double result = Calculate(delegate (double a, double b) { return a * b; }, 2, 4);
-                if (result == 8)
-                {
-                    Console.WriteLine("Zadanie 3: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 3: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 3: 0");
-            }
-            try
-            {
-                string result = Repeat().Invoke("AA", 3);
-                if (result.Equals("AAAAAA") && Repeat().Invoke("-", 2).Equals("--") && Repeat().Invoke("", 3).Equals(""))
-                {
-                    Console.WriteLine("Zadanie 4: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 4: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 5: 0");
-            }
-            try
-            {
-                if (StringConsumer() is Action<string>)
-                {
-                    Console.WriteLine("Zadanie 5: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 5: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 5: 0");
-            }
-            try
-            {
-                if (DoubleFunction() is Func<double, double> && DoubleFunction().Invoke(4) == 16 && DoubleFunction().Invoke(8) == 64)
-                {
-                    Console.WriteLine("Zadanie 6: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 6: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 6: 0");
-            }
-            try
-            {
-                if (IsPhoneNumber() is Predicate<string> && IsPhoneNumber().Invoke("123456789") && !IsPhoneNumber().Invoke("44567ad") && !IsPhoneNumber().Invoke("12345678967"))
-                {
-                    Console.WriteLine("Zadanie 7: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 7: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 7: 0");
-            }
-            try
-            {
-                List<string> data = new List<string>()
-            {
-                "123456789 90",
-                "272899987 87",
-                "-72899987 87",
-                "111234bn2 90",
-                "272899987 -3",
-                "83935 0"
-
+                Console.WriteLine("Wywoływanie predykatu dla " + n);
+                return n % 2 == 0;
             };
-                if (ProcessPeople(data) != null && ProcessPeople(data).Contains(new Person("123456789", 90))
-                    && ProcessPeople(data).Contains(new Person("272899987", 87))
-                    )
-                {
-                    Console.WriteLine("Zadanie 8: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 8: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 8: 0");
-            }
-            try
-            {
-                Messenger messenger = new Messenger();
 
-                if (MessangerSubsciber(messenger, "") != null && MessangerSubsciber(messenger, "Test").Equals("Test"))
-                {
-                    Console.WriteLine("Zadanie 9: 1");
-                    points++;
-                }
-                else
-                {
-                    Console.WriteLine("Zadanie 9: 0");
-                }
-            }
-            catch (NotImplementedException e)
-            {
-                Console.WriteLine("Zadanie 9: 0");
-            }
+            evenNumbers =
+                from n in ints
+                where intPredicate.Invoke(n)
+                select n;
+            evenNumbers =
+                from n in evenNumbers
+                where n > 5
+                select n;
+            Console.WriteLine("Wywoływanie ewaluacji wyrażenia LINQ");
+            Console.WriteLine(string.Join(", ", evenNumbers));
+            Console.WriteLine(evenNumbers.Sum());
+            //Średnia
+            evenNumbers =
+                from n in ints
+                where intPredicate.Invoke(n)
+                select n;
 
-            Console.WriteLine("Suma punktów: " + points);
-        }
+            Console.WriteLine(evenNumbers.Average());
+            //Ile jest liczb w evenNumber
+            Console.WriteLine(evenNumbers.Count());
+            //Jaka jest największa liczba
+            Console.WriteLine(evenNumbers.Max());
+            //Jaka jest najmniejsza liczba
+            Console.WriteLine(evenNumbers.Min());
 
-        //Zadanie 1 
-        //w metodzie uzupełnij ciało delegata, aby zwracał łańcuch z liczbą `value` zapisaną w kodzie szesnastkowym
-        //np. dla value 10 powinien zwrócić "A"
-        public static IntFormatter HexFormatter()
-        {
-            return delegate (int value)
+            Student[] students =
             {
-                string hexValue = value.ToString("X");
-                return hexValue;
+                new Student(1, "Ewa", 67),
+                new Student(2, "Karol", 67),
+                new Student(3, "Ewa", 63),
+                new Student(4, "Ania", 67),
+                new Student(5, "Karol", 37)
             };
-        }
-        //Zadanie 2
-        //zwróć delegata typu operation, który dodaje oba argumenty 
-        static double AddFunction(double a1, double a2)
-        {
-            return a1 + a2;
-        }
-        public static operation AddOperation()
-        {
-            operation add = AddFunction;
-            return add;
-        }
 
-        //Zadanie 3
-        //wywołaj przekazanego delegata op z parametrami a i b, a wynik delegata zwróć jako wartość metody Calculate
-        public static double Calculate(operation op, double a, double b)
-        {
-            double calculate = op.Invoke(a, b);
-            return calculate;
-        }
+            Console.WriteLine("-----------------------------");
+            IEnumerable<string> enumerable =
+                from s in students
+                orderby s.Ects
+                orderby s.Name descending
+                select s.Name + " " + s.Ects;
+            Console.WriteLine(string.Join("\n ", enumerable));
+            //wyswietl liczby z ints w kolejnosci malejacej
+            Console.WriteLine(string.Join(", ",
+                    from i in ints
+                    orderby i descending
+                    select i
+                ));
+            Console.WriteLine(string.Join(", ", ints.OrderByDescending(i => i)));
+            //Za pomoca fluent API wyświetlić posortowaną liste studentów wg 
+            Console.WriteLine(string.Join(", ", students.OrderBy(s => s.Name).ThenBy(s => s.Ects)));
 
-        //Zadanie 4
-        //Zwróć wartość delegata typu Func, który zwraca powtórzony łańcuch (pierwszy argument) n razy (drugi argument) 
-        public static Func<string, int, string> Repeat()
-        {
-            throw new NotImplementedException();
-        }
-
-        //Zadanie 5
-        //zwroć w metodzie lambdę, która wyświetla na konsoli przekazany łańcuch wielkimi literami
-        public static Action<string> StringConsumer()
-        {
-            return x => Console.WriteLine(x.ToUpper());
-        }
-
-        //Zadanie 6
-        //zwroć w metodzie lambdę, która zwraca argument podniesiony do kwadratu
-        public static Func<double, double> DoubleFunction()
-        {
-            return x => x * x;
-        }
-
-        //Zadanie 7
-        //zwróć w metodzie lambdę, która zwraca prawdę, jeśli argument jest poprawnym numerem telefonu:
-        //- ma 9 znaków
-        //- każdy znak jest cyfrą
-        public static Predicate<string> IsPhoneNumber()
-        {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
-        }
-        public static List<Person> LoadPeople(List<String> RawData, Predicate<string> validator)
-        {
-            List<Person> list = new List<Person>();
-            foreach (var row in RawData)
+            //Grupowanie
+            Console.Write("---------GRUPOWANIE-------");
+            IEnumerable<IGrouping<string, Student>> studentNameGroup =
+                from s in students
+                group s by s.Name;
+            foreach (var item in studentNameGroup)
             {
-                string[] tokens = row.Split(" ");
-                string phone = tokens[0];
-                string ects = tokens[1];
-                if (validator != null && validator.Invoke(row))
-                {
-                    list.Add(new Person(phone, int.Parse(ects)));
-                }
+                Console.WriteLine(item.Key + " " + string.Join(", ", item));
             }
-            return list;
-        }
+            IEnumerable<(string Key, int)> NameCounters = from s in students
+                                                          group s by s.Name into groupItem
+                                                          select (groupItem.Key, groupItem.Count());
+            Console.WriteLine(string.Join(", ", NameCounters));
 
-        //Zadanie 8
-        //Podaj w miejscu null lambdę predykatu, która validuje argument wejsciowy w postaci łańcucha
-        //łańcuch składa się z dwóch części oddzielonych spacją
-        //pierwsza zawiera nr telefonu (9 cyfr)
-        //druga zwiera liczbę całkowitą puktów Ects, która nie może być ujemna 
-        //jeśli obie części zawierają poprawne dane to predykat zwarac true
-        public static List<Person> ProcessPeople(List<String> data)
-        {
-            return LoadPeople(data, null);
-        }
+            string str = "Ala ma kota ala lubi koty karol lubi psy";
+            //oblicz ile razy występuje każde słowo w łańcuchu str
+            IEnumerable<(string Key, int)> texts =
+                from w in str.Split(" ")
+                group str by w into groupItem
+                select (groupItem.Key, groupItem.Count());
+            Console.WriteLine(string.Join(", ", texts));
+            Console.WriteLine();
 
-        //Zadanie 9
-        //Zdefiniuj słuchacza klasy Messanger w postaci lambdy, który po odbiorze wiadomości przypisze ją do zmiennej lokalnej receivedMessage
-        public static string MessangerSubsciber(Messenger messenger, String message)
-        {
-            string receivedMessage = null;
-            //poniżej wpisz lambdę, która jest subskrybentem obiektu messanger
-            messenger.SendToAll(message);
-            return receivedMessage;
+            evenNumbers = ints.Where(i => i % 2 == 0).Select(i => i + 2);
+            (int Id, string Name) p =
+            students
+                .Where(s => s.Ects > 20)
+                .OrderBy(s => s.Id)
+                .Select(s => (s.Id, s.Name))
+                .FirstOrDefault(s => s.Name.StartsWith("Ż"));
+            Console.WriteLine(p);
+
+            int[] powerInts =
+            Enumerable
+                .Range(0, ints.Length)
+                .Select(i => ints[i] * ints[i])
+                .ToArray();
+            Console.WriteLine(string.Join(", ", powerInts));
+
+            Random random = new Random();
+            random.Next(5); //zwraca losowa liczbe od 0 do 4
+            //Wygeneruj tablice 100 licb losowych od 0 do 9
+            Enumerable
+                    .Range(0, 101)
+                    .Select(i => random.Next(9)).
+                    ToList().
+                    ForEach(s => Console.Write(", " + s));
+
+            Console.WriteLine();
+            Console.WriteLine("-------------------------");
+            int page = 0;
+            int size = 3;
+            List<Student> pageStudent = students.Skip(page * size).Take(size).ToList();
+            Console.WriteLine(string.Join(", ", pageStudent));
         }
     }
-    record Person(string Phone, int Ects);
-
-
-    class Messenger
-    {
-        public event EventHandler<string> BrodcastMessage;
-
-        protected virtual void OnBroadcast(string message)
-        {
-            BrodcastMessage?.Invoke(this, message);
-        }
-
-        public void SendToAll(string message)
-        {
-            OnBroadcast(message);
-        }
-    }
-
-
 }

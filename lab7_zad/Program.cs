@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace lab7_zad
 {
     delegate String IntFormatter(int a);
 
     delegate double operation(double a, double b);
-
     class Program
     {
         public static void Main(string[] args)
@@ -186,31 +184,34 @@ namespace lab7_zad
         {
             return delegate (int value)
             {
-                //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-                throw new NotImplementedException();
+                string hexValue = value.ToString("X");
+                return hexValue;
             };
         }
         //Zadanie 2
         //zwróć delegata typu operation, który dodaje oba argumenty 
+        static double AddFunction(double a1, double a2)
+        {
+            return a1 + a2;
+        }
         public static operation AddOperation()
         {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
+            operation add = AddFunction;
+            return add;
         }
 
         //Zadanie 3
         //wywołaj przekazanego delegata op z parametrami a i b, a wynik delegata zwróć jako wartość metody Calculate
         public static double Calculate(operation op, double a, double b)
         {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
+            double calculate = op.Invoke(a, b);
+            return calculate;
         }
 
         //Zadanie 4
         //Zwróć wartość delegata typu Func, który zwraca powtórzony łańcuch (pierwszy argument) n razy (drugi argument) 
         public static Func<string, int, string> Repeat()
         {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
             throw new NotImplementedException();
         }
 
@@ -218,16 +219,16 @@ namespace lab7_zad
         //zwroć w metodzie lambdę, która wyświetla na konsoli przekazany łańcuch wielkimi literami
         public static Action<string> StringConsumer()
         {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
+            return x => Console.WriteLine(x.ToUpper());
         }
+
         //Zadanie 6
         //zwroć w metodzie lambdę, która zwraca argument podniesiony do kwadratu
         public static Func<double, double> DoubleFunction()
         {
-            //usuń zgłoszenie wyjątku i wpisz rozwiązanie
-            throw new NotImplementedException();
+            return x => x * x;
         }
+
         //Zadanie 7
         //zwróć w metodzie lambdę, która zwraca prawdę, jeśli argument jest poprawnym numerem telefonu:
         //- ma 9 znaków
@@ -291,7 +292,6 @@ namespace lab7_zad
             OnBroadcast(message);
         }
     }
-
 
 
 }
